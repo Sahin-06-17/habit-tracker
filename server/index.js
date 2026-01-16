@@ -10,7 +10,11 @@ const app = express();
 // 1. NUCLEAR CORS SETUP
 // This prevents the "Preflight" 401 errors
 app.use(cors({
-    origin: 'http://localhost:5173', // Your Frontend URL
+    // Allow BOTH your local laptop AND your Vercel site
+    origin: [
+        'http://localhost:5173',
+        'https://habit-tracker-bice-gamma.vercel.app' // <--- YOUR VERCEL URL
+    ],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
