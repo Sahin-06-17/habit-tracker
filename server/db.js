@@ -1,4 +1,6 @@
-const mysql = require('mysql2'); // or mysql2/promise
+require('dotenv').config();
+const mysql = require('mysql2');
+
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -8,10 +10,14 @@ const pool = mysql.createPool({
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
-    // 👇 ADD THIS SSL BLOCK FOR CLOUD DBs
+    // 👇 THIS IS THE MAGIC FIX FOR CLOUD DATABASES
     ssl: {
         rejectUnauthorized: true
     }
+});
+
+pool.on('error', (err) => {
+    console.error('Database Error:', err);
 });
 
 module.exports = pool.promise();
