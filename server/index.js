@@ -203,4 +203,48 @@ app.post('/user/watch-ad', requireAuth, syncUserToDB, async (req, res) => {
     }
 });
 
-app.listen(3000, () => console.log("✅ Server running on 3000"));
+// 👇 SELF-REPAIR: Create tables automatically on startup
+async function initDB() {
+  try {
+    await db.query(`USE test`); // Force usage of 'test' db
+    
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id VARCHAR(255) NOT NULL PRIMARY KEY,
+        email VARCHAR(255) NOT NULL,
+        streak_freezes INT DEFAULT 0
+      )
+    `);
+
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS habits (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id VARCHAR(255) NOT NULL,
+        title VARCHAR(100) NOT NULL,
+        currentStreak INT DEFAULT 0,
+        is_archived BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS habit_logs (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        habit_id INT NOT NULL,
+        check_date DATE NOT NULL,
+        status ENUM('completed', 'frozen') DEFAULT 'completed',
+        UNIQUE KEY unique_checkin (habit_id, check_date)
+      )
+    `);
+    console.log("✅ Tables checked and created successfully!");
+  } catch (err) {
+    console.error("❌ Database Init Failed:", err);
+  }
+}
+
+// Start Server ONLY after DB is ready
+initDB().then(() => {
+  app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+  });
+});
