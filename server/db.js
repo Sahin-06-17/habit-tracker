@@ -6,7 +6,7 @@ const pool = mysql.createPool({
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     // 👇 WE ARE FORCING IT HERE. NO MORE SECRETS.
-    database: 'streak_tracker', 
+    database: 'test', 
     port: process.env.DB_PORT || 3306,
     waitForConnections: true,
     connectionLimit: 10,
@@ -20,4 +20,4 @@ pool.on('error', (err) => {
     console.error('Database Error:', err);
 });
 
-module.exports = pool.promise();
+module.exports = pool.promise(); 
