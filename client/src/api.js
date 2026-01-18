@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: "https://habit-tracker-835v.onrender.com",
 });
 
 // Helper to attach token
